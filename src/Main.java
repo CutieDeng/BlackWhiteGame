@@ -21,6 +21,17 @@ public class Main extends Application {
         Application.launch(args);
     }
 
+    private boolean canClick(Rule rule, boolean isBlack, int size) {
+        for (int r = 0; r < size; ++r) {
+            for (int c = 0; c < size; ++c) {
+                if (rule.attemptPoi(r, c, isBlack)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         GridPane gridPane = new GridPane();
@@ -43,7 +54,39 @@ public class Main extends Application {
                     @Override
                     public void handle(MouseEvent event) {
                         boolean result = rule.setPoi(fr, fc, isBlack.get());
-                        if (result) isBlack.set(!isBlack.get());
+                        if (result) {
+                            isBlack.set(!isBlack.get());
+                            System.out.println("现为" + (isBlack.get() ? "红" : "绿") + "落子。");
+
+                            if (!canClick(rule, isBlack.get(), 8)) {
+                                System.out.println((isBlack.get() ? "红" : "绿") + "方无棋可走，现为"
+                                    + ((!isBlack.get()) ? "红" : "绿") +"方落子。");
+                                isBlack.set(!isBlack.get());
+
+                                if (!canClick(rule, isBlack.get(), 8)) {
+                                    System.out.println("游戏结束！");
+
+                                    int blackCount = 0;
+                                    int whiteCount = 0;
+                                    for (int i = 0; i < 64; ++i)
+                                        if (rule.getState(i / 8, i % 8) == 1)
+                                            ++blackCount;
+                                        else if (rule.getState(i / 8, i % 8) == -1)
+                                            ++whiteCount;
+
+                                    System.out.println("绿方子数：" + whiteCount);
+                                    System.out.println("红方子数：" + blackCount);
+
+                                    if (blackCount < whiteCount) {
+                                        System.out.println("红方获胜！");
+                                    } else if (blackCount > whiteCount) {
+                                        System.out.println("绿方获胜！");
+                                    } else {
+                                        System.out.println("平局");
+                                    }
+                                }
+                            }
+                        }
                     }
                 });
             }

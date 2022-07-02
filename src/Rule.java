@@ -19,6 +19,8 @@ public interface Rule {
     // Returns false when failure.
     boolean setPoi(int row, int col, boolean isBlack);
 
+    boolean attemptPoi(int row, int col, boolean isBlack);
+
     void forcePoi(int row, int col, boolean isBlack);
 
     void register(Function<Boolean, BiConsumer<Integer, Integer>> f);
